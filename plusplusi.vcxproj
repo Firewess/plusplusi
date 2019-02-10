@@ -36,6 +36,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\plusplusi.cpp" />
+    <ClCompile Include="src\core\plusplusi_config.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\plusplusi_config.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="conf\configure.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{399a13c9-ecff-40d9-bde3-10238e373f01}</ProjectGuid>
