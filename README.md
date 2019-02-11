@@ -6,5 +6,5 @@
 
 ## 开发环境
 
-+ Visual Studio 2019 preview，Linux项目
-+ 远程主机：Centos 7，gcc/g++ 4.8.5，安装gdb
++ Clion 2018.3.4
++ Centos 7，g++ 4.8.5，安装gdb
