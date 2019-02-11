@@ -1,13 +1,14 @@
 #include <iostream>
 #include "plusplusi_config.h"
+#include <unistd.h>
 
 int main()
 {
-	int port;
+    int port;
 	std::string ipAddress;
 	std::string username;
 	std::string password;
-	const std::string ConfigFile = "../conf/config.txt";
+	const std::string ConfigFile = "../conf/configure.txt";
 	Config configSettings(ConfigFile);
 
 	port = configSettings.Read("port", 0);
