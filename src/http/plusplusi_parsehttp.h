@@ -10,7 +10,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
-#include <map>
+#include "plusplusi_function_objects.h"
 
 /*
  *@author: Jie Feng
@@ -47,7 +47,8 @@ int parse_http(const std::string & http)
     if(strs.empty()) return -1;
     else
     {
-
+        HTTP parse;
+        parse(strs.at(0));
     }
 }
 

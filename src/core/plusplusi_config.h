@@ -224,6 +224,6 @@ bool Config::ReadInto(T &var, const std::string &key, const T &value) const
 template<class T>
 void Config::Add(const std::string &in_key, const T &value)
 {
-    trim(in_key);
+    //trim(in_key);
     m_Contents[in_key] = trim(T_as_string(value));
 }
