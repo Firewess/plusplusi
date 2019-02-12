@@ -1,3 +1,4 @@
 [http]
 port=1114
 worker=4
+index = index.html
