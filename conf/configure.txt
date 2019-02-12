@@ -1,3 +1,3 @@
-ipAddress=10.10.90.125 
-port=3001 
-username=mark
+[http]
+port=1114
+worker=4
