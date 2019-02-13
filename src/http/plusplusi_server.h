@@ -1,6 +1,6 @@
 /*
  *@author: Jie Feng
- *@desription: todo
+ *@desription: this is a test file for server socket
  *@date: 19-2-11 下午11:29
  */
 #include <cstdio>

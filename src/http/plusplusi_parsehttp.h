@@ -1,6 +1,6 @@
 /*
  *@author: Jie Feng
- *@desription: todo
+ *@desription: this file is used for parse http
  *@date: 19-2-11 下午11:29
  */
 
