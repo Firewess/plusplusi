@@ -1,5 +1,4 @@
 #include <iostream>
-#include "plusplusi_config.h"
 #include <unistd.h>
 #include <cstdio>
 #include <cctype>
@@ -11,6 +10,8 @@
 #include <cstring>
 #include <sys/stat.h>
 
+#include "plusplusi_config.h"
+
 #define QUEUE_MAX_COUNT 5
 #define BUFF_SIZE 1024
 
@@ -20,13 +21,13 @@ int run()
 {
     int PORT = 1114;
     int WORKER = 4;
-    /*const std::string ConfigFile = "../conf/configure.txt";
+    const std::string ConfigFile = "../conf/configure.txt";
     Config settings(ConfigFile);
 
     PORT = settings.Read("port", 1114);
     WORKER = settings.Read("worker", 1);
     std::cout << "port:" << PORT << std::endl;
-    std::cout << "workers: " << WORKER << std::endl;*/
+    std::cout << "workers: " << WORKER << std::endl;
 
     /* 定义server和client的文件描述符 */
     int server_fd(-1);

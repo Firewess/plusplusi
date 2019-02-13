@@ -1,4 +1,6 @@
 [http]
 port=1114
 worker=4
-index = index.html
+#please write the absolute path or do not set root
+#root=html
+index=index.html
