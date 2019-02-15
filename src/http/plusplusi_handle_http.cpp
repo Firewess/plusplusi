@@ -7,9 +7,43 @@
 #include "plusplusi_handle_http.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
+
+HTTP_MAP HTTP_Handler::HTTP_MIME_MAP = {
+        std::make_pair("html", "text/html"),
+        std::make_pair("xml", "text/xml"),
+        std::make_pair("xhtml", "application/xhtml+xml"),
+        std::make_pair("txt", "text/plain"),
+        std::make_pair("rtf", "application/rtf"),
+        std::make_pair("pdf", "application/pdf"),
+        std::make_pair("doc", "application/msword"),
+        std::make_pair("png", "image/png"),
+        std::make_pair("gif", "image/gif"),
+        std::make_pair("jpeg", "image/jpeg"),
+        std::make_pair("jpg", "image/jpeg"),
+        std::make_pair("au", "audio/basic"),
+        std::make_pair("avi", "video/avi"),
+        std::make_pair("ico", "image/x-icon"),
+        std::make_pair("js", "application/x-javascript"),
+        std::make_pair("htm", "text/html"),
+        std::make_pair("mp4", "video/mpeg4"),
+        std::make_pair("mp3", "audio/mp3"),
+        std::make_pair("css", "text/css")
+};
+
+HTTP_STATUS_CODE HTTP_Handler::HTTP_STATUS_CODE_MAP = {
+        std::make_pair(200, "OK"),
+        std::make_pair(400, "Bad Request"),
+        std::make_pair(401, "Unauthorized"),
+        std::make_pair(403, "Forbidden"),
+        std::make_pair(404, "Not Found"),
+        std::make_pair(301, "Moved Permanently"),
+        std::make_pair(304, "Not Modified"),
+        std::make_pair(503, "Service Unavailable")
+};
 
 HTTP_Handler::HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::string index)
-        : SERV_SOCK(serv_sock), CLNT_SOCK(clnt_sock), ROOT(root), INDEX(index)
+        : SERVER_SOCK(serv_sock), CLIENT_SOCK(clnt_sock), ROOT(root), INDEX(index)
 {
     http_method.insert(std::make_pair("GET", GET));
     http_method.insert(std::make_pair("POST", POST));
@@ -20,10 +54,10 @@ HTTP_Handler::HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::
     http_method.insert(std::make_pair("OPTIONS", OPTIONS));
     http_method.insert(std::make_pair("TRACE", TRACE));
     http_method.insert(std::make_pair("PATCH", PATCH));
-    init_http_head();
+    //init_http_head();
 }
 
-void HTTP_Handler::init_http_head()
+/*void HTTP_Handler::init_http_head()
 {
     General_HEAD.insert(std::make_pair("Cache-Control", "")); //控制缓存的行为
     General_HEAD.insert(std::make_pair("Connection", "")); //控制不再转发给代理的首部字段、管理持久连接
@@ -75,41 +109,72 @@ void HTTP_Handler::init_http_head()
     Entity_HEAD.insert(std::make_pair("Content-Type", "")); //实体主体的媒体类型
     Entity_HEAD.insert(std::make_pair("Expires", "")); //实体主体过期的日期时间
     Entity_HEAD.insert(std::make_pair("Last-Modified", "")); //资源的最后修改日期时间
-}
+}*/
 
 void HTTP_Handler::operator()(const std::string &str)
 {
-    auto strs = split_string(str, "\r\n");
-    auto head = split_string(strs.at(0), " ");
-    auto uri = split_string(head.at(1), "/");
-    switch (http_method[head.at(0)])
+    auto heads = split_string(str, "\r\n");
+    auto request_line = split_string(heads.at(0), " ");
+    auto uri = request_line.at(1);
+    for (const auto head : heads)
+    {
+        auto temp = split_string(head, ": ");
+        if (temp.size() == 2)
+        {
+            HTTP_Request_Map.insert(std::make_pair(std::move(temp.at(0)), std::move(temp.at(1))));
+        }
+    }
+    switch (http_method[request_line.at(0)])
     {
         case GET:
         {
             std::cout << "start handle GET method\n";
             std::string path;
             std::string response;
-            if (uri.size() == 1)
+            std::string suffix;
+            //HTTP_Response_Map.push_back(std::move(
+            //      std::make_pair(std::move(std::string("Server")), std::move(std::string("plusplusi/0.5 Linux")))));
+
+            HTTP_Response_Map.insert(std::move(
+                    std::make_pair(std::move(std::string("Server")), std::move(std::string("plusplusi/0.5 Linux")))));
+            if (uri == "/")
             {
                 path = ROOT + "/" + INDEX;
-            } else if (uri.size() == 2)
+                suffix = split_string(INDEX, ".").at(1);
+            } else
             {
-                path = ROOT + "/" + std::move(uri.at(1)); //move semantic
+                auto temp = split_string(uri, ".");
+                suffix = temp.at(temp.size() - 1);
+                path = ROOT + std::move(uri); //move semantic
+            }
+            if (HTTP_MIME_MAP.find(suffix) != HTTP_MIME_MAP.end())
+            {
+                //if find this MIME type file, return its MIME
+                //HTTP_Response_Map.push_back(std::move(std::make_pair(std::string("Content-Type"), HTTP_MIME_MAP[suffix])));
+                HTTP_Response_Map.insert(std::move(std::make_pair(std::string("Content-Type"), HTTP_MIME_MAP[suffix])));
+            } else
+            {
+                //else, handle it as plain text
+                //HTTP_Response_Map.push_back(std::move(
+                //      std::make_pair(std::string("Content-Type"), std::move(std::string("text/plain")))));
+                HTTP_Response_Map.insert(std::move(
+                        std::make_pair(std::string("Content-Type"), std::move(std::string("text/plain")))));
+                suffix = "txt";
             }
             std::cout << "file path is: " << path << std::endl;
-            response = read_file(std::move(path));
-            std::cout << "response is: " << response << std::endl;
-            if (status == 200)
-            {
-                std::string res_head = "HTTP/1.1 200 OK\r\nServer: plusplusi/0.5\r\n\r\n";
-                send_to_client(res_head);
-                send_to_client(response);
-            } else if (status == 404)
-            {
-                std::string res_head = "HTTP/1.1 404 Not Found\r\nServer: plusplusi/0.5\r\n\r\n";
-                send_to_client(res_head);
-            }
-            close_sock(CLNT_SOCK);
+            response = std::move(read_file(std::move(path)));
+            //HTTP_Response_Map.push_back(std::make_pair(std::move(std::string("Content-Length")),
+            //                                std::move(std::to_string(response.length()))));
+            HTTP_Response_Map.insert(std::make_pair(std::move(std::string("Content-Length")),
+                                                    std::move(std::to_string(response.length()))));
+            std::string res_head =
+                    request_line.at(2) + " " + std::to_string(status) + " " + HTTP_STATUS_CODE_MAP[status] + "\r\n";
+            std::string field = std::move(map_to_string(HTTP_Response_Map));
+            send_to_client(res_head);
+            send_to_client(field);
+            send_to_client(response);
+            close_sock(CLIENT_SOCK);
+            HTTP_Response_Map.clear();
             break;
         }
         case POST:
@@ -131,40 +196,29 @@ void HTTP_Handler::operator()(const std::string &str)
         default:
             return;
     }
-    for (auto head : strs)
-    {
-        auto temp = split_string(head, ": ");
-        if (temp.size() == 2)
-        {
-            if (General_HEAD.find(temp.at(0)) != General_HEAD.end())
-                General_HEAD[temp.at(0)] = temp.at(1);
-            else if (Request_HEAD.find(temp.at(0)) != Request_HEAD.end())
-                Request_HEAD[temp.at(0)] = temp.at(1);
-            else if (Entity_HEAD.find(temp.at(0)) != Entity_HEAD.end())
-                Entity_HEAD[temp.at(0)] = temp.at(1);
-        }
-    }
 }
 
-std::string &HTTP_Handler::read_file(std::string &&filename)
+std::string HTTP_Handler::read_file(std::string &&filename)
 {
-    std::string content;
-    std::string temp;
+    std::ostringstream buf;
+    char ch;
 
     std::ifstream infile(filename);
     if (!infile)
     {
         status = 404;
-        return content;
+        return buf.str();
+    } else
+    {
+        while (buf && infile.get(ch)) buf.put(ch);
+        status = 200;
+        return buf.str();
     }
-    while (getline(infile, temp)) content += temp + "\n";
-    status = 200;
-    return content;
 }
 
 void HTTP_Handler::send_to_client(std::string &message)
 {
-    send(CLNT_SOCK, message.c_str(), message.size(), 0);
+    send(CLIENT_SOCK, message.data(), message.size(), 0);
 }
 
 /*
@@ -188,4 +242,13 @@ std::vector<std::string> HTTP_Handler::split_string(const std::string &str, cons
     if (pos_substr_start != str.length())
         sub_strings.push_back(str.substr(pos_substr_start));
     return sub_strings;
+}
+
+std::string HTTP_Handler::map_to_string(const HTTP_MAP &the_map)
+{
+    std::string result;
+    for (const auto &t: the_map)
+        result += t.first + ": " + t.second + "\r\n";
+    result += "\r\n";
+    return result;
 }

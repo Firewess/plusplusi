@@ -14,7 +14,7 @@ HTTP_SERVER::HTTP_SERVER(int port, std::string &&root, std::string &&index, int 
 
 void HTTP_SERVER::init_server()
 {
-    struct sockaddr_in server_addr;    /*本地地址*/
+    struct sockaddr_in server_addr{};    /*本地地址*/
     //signal(SIGINT, sig_int);
 
     /*建立TCP套接字*/
@@ -55,7 +55,7 @@ void HTTP_SERVER::init_server()
     }else if (status == 0) //每一个子进程都会运行的代码
     {
         std::cout << "this is worker process: " << getpid() << std::endl;
-        handle_connect(SERV_SOCK, getpid());
+        handle_connect(SERVER_SOCK, getpid());
     } else
     {
         std::cout << "this is master process: " << getpid() << std::endl;
@@ -69,7 +69,7 @@ void HTTP_SERVER::init_server()
 void HTTP_SERVER::handle_connect(int serv_sock, int pid)
 {
     int clnt_sock;    /*客户端套接字文件描述符*/
-    struct sockaddr_in clnt_addr;    /*客户端地址*/
+    struct sockaddr_in clnt_addr{};    /*客户端地址*/
     socklen_t clnt_addr_len = sizeof(clnt_addr);
     /*主处理过程*/
     while (true)
