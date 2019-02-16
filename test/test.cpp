@@ -26,6 +26,7 @@ int main()
     std::cout << "workers: " << WORKER << std::endl;
 
     HTTP_SERVER http_server(PORT, std::move(ROOT), std::move(INDEX), WORKER);
+    http_server.run();
 
     return 0;
 }

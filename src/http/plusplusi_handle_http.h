@@ -29,14 +29,14 @@ typedef std::vector<std::pair<std::string, std::string>> HTTP_RESPONSE;
 class HTTP_Handler
 {
 public:
-    HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::string index);
+    HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::string index, std::string server);
 
     void operator() (const std::string& str);
 
 private:
     void init_http_head();
     std::string read_file(std::string&& filename);
-    void send_to_client(std::string &message);
+    int send_to_client(std::string &message);
     std::vector<std::string> split_string(const std::string& str, const std::string& separator);
     inline void close_sock(int sock)
     {
@@ -50,6 +50,7 @@ private:
     int CLIENT_SOCK;
     std::string ROOT;
     std::string INDEX;
+    std::string SERVER_INFO;
 
     int status; //http status code
 

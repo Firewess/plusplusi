@@ -15,7 +15,7 @@
 #define QUEUE_MAX_COUNT 5
 #define BUFF_SIZE 1024
 
-#define SERVER_STRING "Server: plusplusi 0.1.0\r\n"
+#define SERVER_INFO "plusplusi/0.5 (Linux)\r\n"
 
 int run()
 {
@@ -102,7 +102,7 @@ int run()
             /* 发送响应给客户端 */
             sprintf(buf, "HTTP/1.0 200 OK\r\n");
             send(client_fd, buf, strlen(buf), 0);
-            strcpy(buf, SERVER_STRING);
+            strcpy(buf, SERVER_INFO);
             send(client_fd, buf, strlen(buf), 0);
             sprintf(buf, "Content-Type: text/html\r\n");
             send(client_fd, buf, strlen(buf), 0);

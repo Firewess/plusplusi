@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 HTTP_MAP HTTP_Handler::HTTP_MIME_MAP = {
         std::make_pair("html", "text/html"),
@@ -42,8 +43,8 @@ HTTP_STATUS_CODE HTTP_Handler::HTTP_STATUS_CODE_MAP = {
         std::make_pair(503, "Service Unavailable")
 };
 
-HTTP_Handler::HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::string index)
-        : SERVER_SOCK(serv_sock), CLIENT_SOCK(clnt_sock), ROOT(root), INDEX(index)
+HTTP_Handler::HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::string index, std::string server)
+        : SERVER_SOCK(serv_sock), CLIENT_SOCK(clnt_sock), ROOT(root), INDEX(index), SERVER_INFO(server)
 {
     http_method.insert(std::make_pair("GET", GET));
     http_method.insert(std::make_pair("POST", POST));
@@ -128,7 +129,6 @@ void HTTP_Handler::operator()(const std::string &str)
     {
         case GET:
         {
-            std::cout << "start handle GET method\n";
             std::string path;
             std::string response;
             std::string suffix;
@@ -136,7 +136,7 @@ void HTTP_Handler::operator()(const std::string &str)
             //      std::make_pair(std::move(std::string("Server")), std::move(std::string("plusplusi/0.5 Linux")))));
 
             HTTP_Response_Map.insert(std::move(
-                    std::make_pair(std::move(std::string("Server")), std::move(std::string("plusplusi/0.5 Linux")))));
+                    std::make_pair(std::move(std::string("Server")), SERVER_INFO)));
             if (uri == "/")
             {
                 path = ROOT + "/" + INDEX;
@@ -161,7 +161,7 @@ void HTTP_Handler::operator()(const std::string &str)
                         std::make_pair(std::string("Content-Type"), std::move(std::string("text/plain")))));
                 suffix = "txt";
             }
-            std::cout << "file path is: " << path << std::endl;
+            //std::cout << "file path is: " << path << std::endl;
             response = std::move(read_file(std::move(path)));
             //HTTP_Response_Map.push_back(std::make_pair(std::move(std::string("Content-Length")),
             //                                std::move(std::to_string(response.length()))));
@@ -170,9 +170,13 @@ void HTTP_Handler::operator()(const std::string &str)
             std::string res_head =
                     request_line.at(2) + " " + std::to_string(status) + " " + HTTP_STATUS_CODE_MAP[status] + "\r\n";
             std::string field = std::move(map_to_string(HTTP_Response_Map));
-            send_to_client(res_head);
-            send_to_client(field);
-            send_to_client(response);
+            int ret = send_to_client(res_head);
+            ret = send_to_client(field);
+            ret = send_to_client(response);
+            if (ret < 0)
+            {
+                std::cout << "write info to connection socket failed" << std::endl;
+            }
             close_sock(CLIENT_SOCK);
             HTTP_Response_Map.clear();
             break;
@@ -200,7 +204,25 @@ void HTTP_Handler::operator()(const std::string &str)
 
 std::string HTTP_Handler::read_file(std::string &&filename)
 {
-    std::ostringstream buf;
+    std::ifstream is(filename.c_str(), std::ifstream::in | std::ios::binary);
+    status = 503;
+    if (!is)
+    {
+        status = 404;
+        return "";
+    } else
+    {
+        is.seekg(0, is.end);
+        auto file_length = is.tellg();
+        is.seekg(0, is.beg);
+        char *buffer = new char[file_length];
+        is.read(buffer, file_length);
+        std::string image(buffer, file_length);
+        status = 200;
+        delete[] buffer;
+        return image;
+    }
+    /*std::ostringstream buf;
     char ch;
 
     std::ifstream infile(filename);
@@ -213,12 +235,18 @@ std::string HTTP_Handler::read_file(std::string &&filename)
         while (buf && infile.get(ch)) buf.put(ch);
         status = 200;
         return buf.str();
-    }
+    }*/
 }
 
-void HTTP_Handler::send_to_client(std::string &message)
+int HTTP_Handler::send_to_client(std::string &message)
 {
-    send(CLIENT_SOCK, message.data(), message.size(), 0);
+    //send(CLIENT_SOCK, message.data(), message.size(), 0);
+    auto body_length = message.size();
+    char *buffer = new char[body_length];
+    memcpy(buffer, message.data(), body_length);
+    int ret = write(CLIENT_SOCK, buffer, body_length);
+    delete[] buffer;
+    return ret;
 }
 
 /*

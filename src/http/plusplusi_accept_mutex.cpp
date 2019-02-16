@@ -25,12 +25,12 @@ void Accept_Mutex::init()
     pthread_mutex_init(plusplisi_accept_mutex, &mutexattr);
 }
 
-void Accept_Mutex::lock()
+int Accept_Mutex::lock()
 {
-    pthread_mutex_lock(plusplisi_accept_mutex);
+    return pthread_mutex_lock(plusplisi_accept_mutex);
 }
 
-void Accept_Mutex::unlock()
+int Accept_Mutex::unlock()
 {
-    pthread_mutex_unlock(plusplisi_accept_mutex);
+    return pthread_mutex_unlock(plusplisi_accept_mutex);
 }

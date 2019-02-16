@@ -20,19 +20,14 @@
 #include <pthread.h>
 #include <sys/mman.h>
 
-#define SERVER_PORT 1114
-#define BACKLOG 5
-#define PIDNUMB 2
-
-//https://blog.csdn.net/gettogetto/article/details/77430852
 class Accept_Mutex
 {
 public:
     Accept_Mutex();
 
-    void lock();
+    int lock();
 
-    void unlock();
+    int unlock();
 
 private:
     void init();
