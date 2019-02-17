@@ -6,17 +6,7 @@
 #ifndef _plusplusi_accept_mutex_H
 #define _plusplusi_accept_mutex_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <ctime>
-#include <cstring>
 #include <cstdio>
-#include <cstdlib>
-#include <csignal>
-#include <cerrno>
-#include <fcntl.h>
-#include <unistd.h>
 #include <pthread.h>
 #include <sys/mman.h>
 

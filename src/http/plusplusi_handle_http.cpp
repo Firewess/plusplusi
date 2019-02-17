@@ -170,14 +170,14 @@ void HTTP_Handler::operator()(const std::string &str)
             std::string res_head =
                     request_line.at(2) + " " + std::to_string(status) + " " + HTTP_STATUS_CODE_MAP[status] + "\r\n";
             std::string field = std::move(map_to_string(HTTP_Response_Map));
-            int ret = send_to_client(res_head);
-            ret = send_to_client(field);
-            ret = send_to_client(response);
-            if (ret < 0)
-            {
-                std::cout << "write info to connection socket failed" << std::endl;
-            }
-            close_sock(CLIENT_SOCK);
+
+            //send http response head to client first,
+            //in case epoll will not send response immediately which would cause browser
+            //think website is unavailable.
+            //send_to_client(res_head);
+            //send_to_client(field);
+
+            str_reponse = std::move(res_head + field + response);
             HTTP_Response_Map.clear();
             break;
         }
@@ -215,7 +215,7 @@ std::string HTTP_Handler::read_file(std::string &&filename)
         is.seekg(0, is.end);
         auto file_length = is.tellg();
         is.seekg(0, is.beg);
-        char *buffer = new char[file_length];
+        auto *buffer = new char[file_length];
         is.read(buffer, file_length);
         std::string image(buffer, file_length);
         status = 200;
@@ -242,7 +242,7 @@ int HTTP_Handler::send_to_client(std::string &message)
 {
     //send(CLIENT_SOCK, message.data(), message.size(), 0);
     auto body_length = message.size();
-    char *buffer = new char[body_length];
+    auto *buffer = new char[body_length];
     memcpy(buffer, message.data(), body_length);
     int ret = write(CLIENT_SOCK, buffer, body_length);
     delete[] buffer;

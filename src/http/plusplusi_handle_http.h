@@ -26,8 +26,11 @@ typedef std::map<std::string, std::string> HTTP_MAP;
 typedef std::map<int, std::string> HTTP_STATUS_CODE;
 typedef std::vector<std::pair<std::string, std::string>> HTTP_RESPONSE;
 
+class HTTP_SERVER;
+
 class HTTP_Handler
 {
+    friend class HTTP_SERVER;
 public:
     HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::string index, std::string server);
 
@@ -53,6 +56,7 @@ private:
     std::string SERVER_INFO;
 
     int status; //http status code
+    std::string str_reponse;
 
     std::map<std::string, int> http_method;
     //HTTP_MAP General_HEAD;

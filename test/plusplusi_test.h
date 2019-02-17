@@ -18,12 +18,11 @@
 #include <cstring>
 #include <pthread.h>
 #include <cerrno>
+#include <string>
 
-#define MAXLINE 100
-#define OPEN_MAX 100
+#define MAXLINE 1024
 #define LISTENQ 20
 #define SERV_PORT 1114
-#define INFTIM 1000
 
 //用于读写两个的两个方面传递参数
 
@@ -31,7 +30,7 @@ struct user_data
 {
     int fd;
     unsigned int n_size;
-    char line[MAXLINE];
+    char message[MAXLINE];
 };
 
 //声明epoll_event结构体的变量,ev用于注册事件,数组用于回传要处理的事件
@@ -44,15 +43,15 @@ int epfd;
 
 //pthread_cond_t cond1;
 
-struct task *readhead = NULL, *readtail = NULL, *writehead = NULL;
+//struct task *readhead = NULL, *readtail = NULL, *writehead = NULL;
 
-int i, maxi, listenfd, connfd, sockfd, nfds;
+int i, listenfd, connfd, sockfd, nfds;
 
 unsigned int n;
 
-struct user_data *data = NULL;
+struct user_data *data = nullptr;
 
-struct user_data *rdata = NULL;//用于读写两个的两个方面传递参数
+struct user_data *rdata = nullptr;//用于读写两个的两个方面传递参数
 
 socklen_t client_len;
 
@@ -94,13 +93,16 @@ void init()
     inet_aton(local_addr, &(server_addr.sin_addr));//htons(SERV_PORT);
 
     server_addr.sin_port = htons(SERV_PORT);
-    bind(listenfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
-    listen(listenfd, LISTENQ);
-    maxi = 0;
+    if (bind(listenfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
+        perror("bind");
+    if (listen(listenfd, LISTENQ) < 0)
+        perror("listen");
 }
 
 void work_cycle(int j)
 {
+    printf("entering work_cycle\n");
+
     //生成用于处理accept的epoll专用的文件描述符
     //epfd = epoll_create(256);
     //设置与要处理的事件相关的文件描述符
@@ -113,7 +115,7 @@ void work_cycle(int j)
     for (;;)
     {
         //等待epoll事件的发生
-        nfds = epoll_wait(epfd, events, 20, 1000);
+        nfds = epoll_wait(epfd, events, 20, 100000);
         //处理所发生的所有事件
 
         for (i = 0; i < nfds; ++i)
@@ -125,7 +127,6 @@ void work_cycle(int j)
                 {
                     printf("process %d:connfd<0 accept failure\n", j);
                     continue;
-
                 }
                 setnonblocking(connfd);
                 char *str = inet_ntoa(client_addr.sin_addr);
@@ -144,64 +145,58 @@ void work_cycle(int j)
                     printf("process %d:reading! connfd=%d\n", j, events[i].data.fd);
                     if ((sockfd = events[i].data.fd) < 0) continue;
                     data = (struct user_data *) malloc(sizeof(struct user_data));
-                    if (data == NULL)
+                    if (data == nullptr)
                     {
                         printf("process %d:user_data malloc error", j);
                         exit(1);
                     }
                     data->fd = sockfd;
-                    if ((n = read(sockfd, data->line, MAXLINE)) < 0)
+                    int index = 0, len = 1024, bytes_read = 0;
+                    while (true)
                     {
-                        if (errno == ECONNRESET)
+                        bytes_read = read(sockfd, data->message + index, len - index);
+                        if (bytes_read == -1)
                         {
-                            close(sockfd);
-                        } else
-                            printf("process %d:readline error\n", j);
-                        if (data != NULL)
+                            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                                break;
+                            printf("PID=%d 读错误退出\n", getpid());
+                            break;
+                        } else if (bytes_read == 0)
                         {
-                            free(data);
-                            data = NULL;
-                        }
-                    } else
-                    {
-                        if (n == 0)
-                        {
-                            close(sockfd);
                             printf("process %d:Client close connect!\n", j);
-                            if (data != NULL)
-                            {
-                                //delete data;
-                                free(data);
-                                data = NULL;
-                            }
-                        } else
-                        {
-                            data->n_size = n;
-                            //设置需要传递出去的数据
-                            ev.data.ptr = data;
-                            //设置用于注测的写操作事件
-                            ev.events = EPOLLOUT | EPOLLET;
-                            //修改sockfd上要处理的事件为EPOLLOUT
-                            epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+                            close(sockfd);
+                            break;
                         }
                     }
-                } else
+                    printf("server received\n%s\n", data->message);
+                    memset(data->message, 0, sizeof(data->message));
+                    std::string str =
+                            "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(strlen("this is from server")) +
+                            "\r\nContent-Type: text/html\r\n\r\nthis is from server";
+                    strcpy(data->message, str.c_str());
+                    data->n_size = n;
+                    //设置需要传递出去的数据
+                    ev.data.ptr = data;
+                    //设置用于注测的写操作事件
+                    ev.events = EPOLLOUT | EPOLLET;
+                    //修改sockfd上要处理的事件为EPOLLOUT
+                    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+
+                } else if (events[i].events & EPOLLOUT)
                 {
-                    if (events[i].events & EPOLLOUT)
-                    {
-                        rdata = (struct user_data *) events[i].data.ptr;
-                        sockfd = rdata->fd;
-                        printf("process %d:writing! connfd=%d\n", j, sockfd);
-                        write(sockfd, rdata->line, rdata->n_size);
-                        //delete rdata;
-                        free(rdata);
-                        //设置用于读操作的文件描述符
-                        ev.data.fd = sockfd;
-                        //设置用于注测的读操作事件
-                        ev.events = EPOLLIN | EPOLLET;
-                        //修改sockfd上要处理的事件为EPOLIN
-                        epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
-                    }
+                    rdata = (struct user_data *) events[i].data.ptr;
+                    sockfd = rdata->fd;
+                    printf("process %d:write\n%s connfd: %d\n", j, data->message, sockfd);
+                    write(sockfd, rdata->message, rdata->n_size);
+                    //delete rdata;
+                    free(rdata);
+                    //设置用于读操作的文件描述符
+                    ev.data.fd = sockfd;
+                    //设置用于注测的读操作事件
+                    ev.events = EPOLLIN | EPOLLET;
+                    //修改sockfd上要处理的事件为EPOLIN
+                    epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
+                    close(sockfd);
                 }
             }
         }
@@ -219,7 +214,7 @@ int epoll_run()
 
     //设置与要处理的事件相关的文件描述符
     ev.data.fd = listenfd;
-    for (i = 0; i < 3; i++)
+    /*for (i = 0; i < 3; i++)
     {
         pid = fork();
         switch (pid)
@@ -233,7 +228,9 @@ int epoll_run()
             default:
                 break;
         }
-    }
+    }*/
+
+    work_cycle(0);
 }
 
 #endif //_plusplusi_test_H

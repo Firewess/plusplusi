@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <sys/stat.h>
+#include <csignal>
+#include <fcntl.h>
 #include <string>
 
 #include "plusplusi_accept_mutex.h"
@@ -28,17 +30,16 @@ class HTTP_SERVER
 public:
     HTTP_SERVER(int port, std::string&& root, std::string&& index, int worker);
     void run();
+    ~HTTP_SERVER();
 
 private:
     void init_server();
     int create_workers(unsigned int worker_num);
     static void kill_sub_process(int sig);
     static int set_socket_non_blocking(int fd);
-    static int proc_receive(struct epoll_event *pstEvent);
-    static int proc_accept(struct epoll_event *pstEvent);
+    static int proc_receive(struct epoll_event *ready_event);
+    static int proc_accept(struct epoll_event *ready_event);
     void proc_epoll(int epoll_fd, int timeout);
-
-    void handle_connect(int serv_sock, int pid);
 
 private:
     static int PORT;
@@ -49,5 +50,5 @@ private:
     static int workers[WORKER_MAX];
     static int child_epoll_fd;
 
-    static Accept_Mutex accept_mutex;
+    static Accept_Mutex* accept_mutex;
 };

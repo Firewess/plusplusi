@@ -14,7 +14,7 @@ int main()
     int WORKER = 4;
     std::string ROOT = "../html";
     std::string INDEX = "index.html";
-    const std::string ConfigFile = "../conf/configure.txt";
+    const std::string ConfigFile = "../conf/plusplusi.conf";
     Config settings(ConfigFile);
 
     PORT = settings.Read("port", 1114);

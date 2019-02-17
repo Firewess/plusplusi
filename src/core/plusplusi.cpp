@@ -21,7 +21,7 @@ int run()
 {
     int PORT = 1114;
     int WORKER = 4;
-    const std::string ConfigFile = "../conf/configure.txt";
+    const std::string ConfigFile = "../conf/plusplusi.conf";
     Config settings(ConfigFile);
 
     PORT = settings.Read("port", 1114);

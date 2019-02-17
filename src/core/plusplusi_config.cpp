@@ -71,7 +71,7 @@ std::istream &operator>>(std::istream &is, Config &cf)
 
     while (is || nextline.length() > 0)
     {
-        // Read an entire line at a time
+        // Read an entire message at a time
         string line;
         if (nextline.length() > 0)
         {
@@ -85,7 +85,7 @@ std::istream &operator>>(std::istream &is, Config &cf)
         // Ignore comments
         line = line.substr(0, line.find(comm));
 
-        // Parse the line if it contains a delimiter
+        // Parse the message if it contains a delimiter
         pos delimPos = line.find(delim);
         if (delimPos < string::npos)
         {
@@ -93,8 +93,8 @@ std::istream &operator>>(std::istream &is, Config &cf)
             string key = line.substr(0, delimPos);
             line.replace(0, delimPos + skip, "");
 
-            // See if value continues on the next line
-            // Stop at blank line, next line with a key, end of stream,
+            // See if value continues on the next message
+            // Stop at blank message, next message with a key, end of stream,
             // or end of file sentry
             bool terminate = false;
             while (!terminate && is)

@@ -13,16 +13,28 @@ Accept_Mutex::Accept_Mutex()
 
 void Accept_Mutex::init()
 {
-    pthread_mutexattr_t mutexattr;
-    int fd = open("/dev/zero", O_RDWR, 0);
-    if (fd == -1)
-        printf("open err :%s\n", strerror(errno));
-    plusplisi_accept_mutex = static_cast<pthread_mutex_t *>(mmap(NULL, sizeof(pthread_mutex_t), PROT_READ | PROT_WRITE,
-                                                                 MAP_SHARED, fd, 0));
-    close(fd);
-    pthread_mutexattr_init(&mutexattr);
-    pthread_mutexattr_setpshared(&mutexattr, PTHREAD_PROCESS_SHARED);
-    pthread_mutex_init(plusplisi_accept_mutex, &mutexattr);
+    pthread_mutexattr_t attr;
+    int ret;
+
+    //设置互斥量为进程间共享
+    plusplisi_accept_mutex = (pthread_mutex_t *) mmap(nullptr, sizeof(pthread_mutex_t), PROT_READ | PROT_WRITE,
+                                                      MAP_SHARED | MAP_ANON, -1, 0);
+    if (MAP_FAILED == plusplisi_accept_mutex)
+    {
+        perror("mutex mmap failed");
+        return;
+    }
+
+    //设置attr的属性
+    pthread_mutexattr_init(&attr);
+    ret = pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+    if (ret != 0)
+    {
+        fprintf(stderr, "mutex set shared failed");
+        return;
+    }
+    pthread_mutex_init(plusplisi_accept_mutex, &attr);
+    //printf("accept_mutex_init result:%d\n", pthread_mutex_init(plusplisi_accept_mutex, &attr));
 }
 
 int Accept_Mutex::lock()
