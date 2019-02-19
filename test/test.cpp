@@ -6,7 +6,8 @@
 
 #include "../src/core/plusplusi_config.h"
 #include "../src/http/plusplusi_server.h"
-
+#include <algorithm>
+#include <vector>
 
 int main()
 {

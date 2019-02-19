@@ -1,6 +1,6 @@
 /*
  *@author: Jie Feng
- *@desription: this file is a epoll test file
+ *@desription: this file encapsulates epoll-related functions & struct
  *@date: 19-2-13 下午12:06
  */
 #ifndef _plusplusi_epoll_H
@@ -20,12 +20,14 @@
 typedef int (*CALLBACK_FUN)(struct epoll_event *);
 
 class HTTP_Handler;
+class Timer;
 
 typedef struct EPOLL_DATA_S
 {
     int Epoll_FD;
     int Event_FD;
     HTTP_Handler* http_handler;
+    Timer* timer;
     CALLBACK_FUN callback_fun;
 } Epoll_Data_S;
 
@@ -45,6 +47,7 @@ static void add_event_epoll(int epoll_fd, int event_fd, HTTP_Handler* http_handl
 {
     int op = EPOLL_CTL_ADD;
     struct epoll_event ee{};
+    memset(&ee, 0, sizeof(ee));
     auto *data = new Epoll_Data_S();
     if (data == nullptr)
     {
@@ -53,6 +56,7 @@ static void add_event_epoll(int epoll_fd, int event_fd, HTTP_Handler* http_handl
     data->Epoll_FD = epoll_fd;
     data->Event_FD = event_fd;
     data->http_handler = http_handler;
+    data->timer = nullptr;
     data->callback_fun = callback_fun;
     ee.events = EPOLLIN | EPOLLOUT | EPOLLHUP;
     //ee.events = EPOLLIN|EPOLLET;

@@ -11,6 +11,9 @@
 #include <map>
 #include <vector>
 #include <unistd.h>
+#include <sys/stat.h>   //include this header to access a file's information through filename
+#include <fcntl.h>
+#include <sys/mman.h> //for memory mapping
 
 #define GET 0
 #define POST 1
@@ -37,9 +40,13 @@ public:
     void operator() (const std::string& str);
 
 private:
-    void init_http_head();
     std::string read_file(std::string&& filename);
+
+    char* memory_mapping(std::string& filename);
     int send_to_client(std::string &message);
+    int send_to_client(void *usrbuf, size_t n);
+    void memory_unmapping();
+
     std::vector<std::string> split_string(const std::string& str, const std::string& separator);
     inline void close_sock(int sock)
     {
@@ -47,6 +54,7 @@ private:
     }
 
     std::string map_to_string(const HTTP_MAP& );
+    void do_error();
 
 private:
     int SERVER_SOCK;
@@ -56,13 +64,12 @@ private:
     std::string SERVER_INFO;
 
     int status; //http status code
-    std::string str_reponse;
+    std::string str_http_res_header;
+
+    char *mmap_start_addr;
+    struct stat file_info;
 
     std::map<std::string, int> http_method;
-    //HTTP_MAP General_HEAD;
-    //HTTP_MAP Request_HEAD;
-    //HTTP_MAP Response_HEAD;
-    //HTTP_MAP Entity_HEAD;
 
     HTTP_MAP HTTP_Request_Map;   //http request map
 

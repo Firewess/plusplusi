@@ -94,7 +94,7 @@ std::istream &operator>>(std::istream &is, Config &cf)
             line.replace(0, delimPos + skip, "");
 
             // See if value continues on the next message
-            // Stop at blank message, next message with a key, end of stream,
+            // stop at blank message, next message with a key, end of stream,
             // or end of file sentry
             bool terminate = false;
             while (!terminate && is)

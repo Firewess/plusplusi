@@ -14,6 +14,7 @@ int HTTP_SERVER::WORKERS = 4;
 int HTTP_SERVER::SERV_SOCK = -1;
 int HTTP_SERVER::workers[WORKER_MAX];
 int HTTP_SERVER::child_epoll_fd = -1;
+TimerManager HTTP_SERVER::timer_manager;
 
 HTTP_SERVER::HTTP_SERVER(int port, std::string &&root, std::string &&index, int worker)
 {
@@ -75,7 +76,7 @@ int HTTP_SERVER::create_workers(unsigned int worker_num)
         if (0 == pid)
         {
             return 0;
-        } else if (0 < pid)
+        } else if (pid > 0)
         {
             workers[i] = pid;
             continue;
@@ -133,22 +134,23 @@ int HTTP_SERVER::proc_receive(struct epoll_event *ready_event)
             len = (int) recv(event_fd, buff, sizeof(buff), 0);
             if (len <= 0)
             {
-                if (errno == EINTR)
+                if (errno == EINTR || errno == EAGAIN)
                 {
                     continue;
                 }
-                if (len == EAGAIN)
-                    break;
-                //del_event_epoll(epoll_fd, event_fd);
-                //close(event_fd);
-                //delete data;
+                close_fd(data);
             } else if (len > 0)
             {
-                //buff[len] = '\0';
-
                 //handle http request message
                 (*http_handler)(buff);
-                //std::cout << event_fd << " received a request\n";
+
+                if (http_handler->HTTP_Request_Map.find("Connection") != http_handler->HTTP_Request_Map.end() &&
+                    http_handler->HTTP_Request_Map["Connection"] == "keep-alive" && data->timer == nullptr)
+                {
+                    Timer* timer = new Timer(timer_manager);
+                    timer->start(&HTTP_SERVER::close_fd, data, TIME_OUT);
+                }
+
                 ready_event->events = EPOLLOUT | EPOLLET;
                 ready_event->data.ptr = data;
                 mod_event_epoll(epoll_fd, event_fd, ready_event);
@@ -157,24 +159,37 @@ int HTTP_SERVER::proc_receive(struct epoll_event *ready_event)
         }
     } else if (ready_event->events & EPOLLOUT)
     {
-        //printf("%d receive EPOLLOUT\r\n", event_fd);
-        if (data != nullptr)
+        if (!http_handler->str_http_res_header.empty())
         {
-            if (!data->http_handler->str_reponse.empty())
+            //printf("%d 's %d receive EPOLLOUT & data is ready\r\n", getpid(), event_fd);
+            if(http_handler->status < 400)
             {
-                data->http_handler->send_to_client(data->http_handler->str_reponse);
-                //std::cout << event_fd << " send " << data->http_handler->str_reponse << std::endl;
-                data->http_handler->str_reponse.clear();
+                http_handler->send_to_client(http_handler->str_http_res_header);
+                http_handler->str_http_res_header.clear();
+            } else
+            {
+                http_handler->str_http_res_header.clear();
+                http_handler->do_error();
             }
-        }
 
-        //this place will be changed if handled Connection: keep-alive
-        del_event_epoll(epoll_fd, event_fd);
-        close(event_fd);
-        delete data;
+            /*if(http_handler->mmap_start_addr != nullptr)
+            {
+                http_handler->send_to_client(http_handler->mmap_start_addr, http_handler->file_info.st_size);
+            }
+            http_handler->memory_unmapping();*/
+
+            if (http_handler->HTTP_Request_Map.find("Connection") == http_handler->HTTP_Request_Map.end() ||
+                http_handler->HTTP_Request_Map["Connection"] != "keep-alive")
+            {
+                close_fd(data);
+            }
+        } else
+        {
+            //printf("%d 's %d receive EPOLLOUT but data is not ready\r\n", getpid(), event_fd);
+        }
     } else
     {
-        // printf("receive others ready_event->events=%d\r\n", ready_event->events);
+        printf("receive others ready_event->events=%d\r\n", ready_event->events);
     }
     return 0;
 }
@@ -182,13 +197,15 @@ int HTTP_SERVER::proc_receive(struct epoll_event *ready_event)
 int HTTP_SERVER::proc_accept(struct epoll_event *ready_event)
 {
     int client_fd;
+    struct sockaddr_in client_addr{};
+    socklen_t client_addr_len = sizeof(client_addr);
     Epoll_Data_S *data = (Epoll_Data_S *) (ready_event->data.ptr);
-    int epoll_fd = data->Epoll_FD;
     int event_fd = data->Event_FD;
     if (accept_mutex->lock() == 0)
     {
         while (-1 != (client_fd = accept(event_fd, (struct sockaddr *) nullptr, nullptr)))
         {
+            //printf("%d accept success: addr %d, port %d\n", getpid(), client_addr.sin_addr.s_addr, client_addr.sin_port);
             HTTP_Handler *http_handler = new HTTP_Handler(SERV_SOCK, client_fd, ROOT, INDEX, SERVER_INFO);
             set_socket_non_blocking(client_fd);
             add_event_epoll(child_epoll_fd, client_fd, http_handler, proc_receive);
@@ -211,6 +228,20 @@ void HTTP_SERVER::proc_epoll(int epoll_fd, int timeout)
     }
 }
 
+void HTTP_SERVER::close_fd(Epoll_Data_S *ptr)
+{
+    if(ptr->timer != nullptr)
+    {
+        ptr->timer->stop();
+        delete ptr->timer;
+    }
+    delete ptr->http_handler;
+    del_event_epoll(ptr->Epoll_FD, ptr->Event_FD);
+    close(ptr->Event_FD);
+    delete ptr;
+    //std::cout << getpid() << ": " << ptr->Event_FD << " closed because of time out\n";
+}
+
 void HTTP_SERVER::run()
 {
     set_socket_non_blocking(SERV_SOCK);
@@ -229,6 +260,7 @@ void HTTP_SERVER::run()
     /* 主进程 */
     if (master)
     {
+        //TimerManager timer_manager();
         while (true)
         {
             signal(SIGTERM, kill_sub_process);
@@ -245,6 +277,8 @@ void HTTP_SERVER::run()
         }
         while (true)
         {
+            timer_manager.work_cycle();
+
             /* 处理父epoll消息 */
             proc_epoll(epoll_fd, 500);
 

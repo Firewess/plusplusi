@@ -9,6 +9,8 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <ctime>
+#include <cmath>
 
 HTTP_MAP HTTP_Handler::HTTP_MIME_MAP = {
         std::make_pair("html", "text/html"),
@@ -55,62 +57,9 @@ HTTP_Handler::HTTP_Handler(int serv_sock, int clnt_sock, std::string root, std::
     http_method.insert(std::make_pair("OPTIONS", OPTIONS));
     http_method.insert(std::make_pair("TRACE", TRACE));
     http_method.insert(std::make_pair("PATCH", PATCH));
+    mmap_start_addr = nullptr;
     //init_http_head();
 }
-
-/*void HTTP_Handler::init_http_head()
-{
-    General_HEAD.insert(std::make_pair("Cache-Control", "")); //控制缓存的行为
-    General_HEAD.insert(std::make_pair("Connection", "")); //控制不再转发给代理的首部字段、管理持久连接
-    General_HEAD.insert(std::make_pair("Date", "")); //创建报文的日期时间
-    General_HEAD.insert(std::make_pair("Pragma", "")); //报文指令
-    General_HEAD.insert(std::make_pair("Trailer", "")); //报文末端的首部一览
-    General_HEAD.insert(std::make_pair("Transfer-Encoding", "")); //指定报文主体的传输编码方式
-    General_HEAD.insert(std::make_pair("Upgrade", "")); //升级为其他协议
-    General_HEAD.insert(std::make_pair("Via", "")); //代理服务器的相关信息
-    General_HEAD.insert(std::make_pair("Warning", "")); //错误通知
-
-    Request_HEAD.insert(std::make_pair("Accept", "")); //用户代理可处理的媒体类型
-    Request_HEAD.insert(std::make_pair("Accept-Charset", "")); //优先的字符集
-    Request_HEAD.insert(std::make_pair("Accept-Encoding", "")); //优先的内容编码
-    Request_HEAD.insert(std::make_pair("Accept-Language", "")); //优先的语言(自然语言)
-    Request_HEAD.insert(std::make_pair("Authorization", "")); //Web 认证信息
-    Request_HEAD.insert(std::make_pair("Expect", "")); //期待服务器的特定行为
-    Request_HEAD.insert(std::make_pair("From", "")); //用户的电子邮箱地址
-    Request_HEAD.insert(std::make_pair("Host", "")); //请求资源所在服务器
-    Request_HEAD.insert(std::make_pair("If-Match", "")); //比较实体标记(ETag)
-    Request_HEAD.insert(std::make_pair("If-Modified-Since", "")); //比较资源的更新时间
-    Request_HEAD.insert(std::make_pair("If-None-Match", "")); //比较实体标记(与 If-Match 相反)
-    Request_HEAD.insert(std::make_pair("If-Range", "")); //资源未更新时发送实体 Byte 的范围请求
-    Request_HEAD.insert(std::make_pair("If-Unmodified-Since", "")); //比较资源的更新时间(与 If-Modified-Since 相反)
-    Request_HEAD.insert(std::make_pair("Max-Forwards", "")); //最大传输逐跳数
-    Request_HEAD.insert(std::make_pair("Proxy-Authorization", "")); //代理服务器要求客户端的认证信息
-    Request_HEAD.insert(std::make_pair("Range", "")); //实体的字节范围请求
-    Request_HEAD.insert(std::make_pair("Referer", "")); //对请求中 URI 的原始获取方
-    Request_HEAD.insert(std::make_pair("TE", "")); //传输编码的优先级
-    Request_HEAD.insert(std::make_pair("User-Agent", "")); //HTTP 客户端程序的信息
-
-    Response_HEAD.insert(std::make_pair("Accept-Ranges", "")); //是否接受字节范围请求
-    Response_HEAD.insert(std::make_pair("Age", "")); //推算资源创建经过时间
-    Response_HEAD.insert(std::make_pair("ETag", "")); //资源的匹配信息
-    Response_HEAD.insert(std::make_pair("Location", "")); //令客户端重定向至指定 URI
-    Response_HEAD.insert(std::make_pair("Proxy-Authenticate", "")); //代理服务器对客户端的认证信息
-    Response_HEAD.insert(std::make_pair("Retry-After", "")); //对再次发起请求的时机要求
-    Response_HEAD.insert(std::make_pair("Server", "")); //HTTP 服务器的安装信息
-    Response_HEAD.insert(std::make_pair("Vary", "")); //代理服务器缓存的管理信息
-    Response_HEAD.insert(std::make_pair("WWW-Authenticate", "")); //服务器对客户端的认证信息
-
-    Entity_HEAD.insert(std::make_pair("Allow", "")); //资源可支持的 HTTP 方法
-    Entity_HEAD.insert(std::make_pair("Content-Encoding", "")); //实体主体适用的编码方式
-    Entity_HEAD.insert(std::make_pair("Content-Language", "")); //实体主体的自然语言
-    Entity_HEAD.insert(std::make_pair("Content-Length", "")); //实体主体的大小
-    Entity_HEAD.insert(std::make_pair("Content-Location", "")); //替代对应资源的 URI
-    Entity_HEAD.insert(std::make_pair("Content-MD5", "")); //实体主体的报文摘要
-    Entity_HEAD.insert(std::make_pair("Content-Range", "")); //实体主体的位置范围
-    Entity_HEAD.insert(std::make_pair("Content-Type", "")); //实体主体的媒体类型
-    Entity_HEAD.insert(std::make_pair("Expires", "")); //实体主体过期的日期时间
-    Entity_HEAD.insert(std::make_pair("Last-Modified", "")); //资源的最后修改日期时间
-}*/
 
 void HTTP_Handler::operator()(const std::string &str)
 {
@@ -130,11 +79,7 @@ void HTTP_Handler::operator()(const std::string &str)
         case GET:
         {
             std::string path;
-            std::string response;
             std::string suffix;
-            //HTTP_Response_Map.push_back(std::move(
-            //      std::make_pair(std::move(std::string("Server")), std::move(std::string("plusplusi/0.5 Linux")))));
-
             HTTP_Response_Map.insert(std::move(
                     std::make_pair(std::move(std::string("Server")), SERVER_INFO)));
             if (uri == "/")
@@ -150,34 +95,29 @@ void HTTP_Handler::operator()(const std::string &str)
             if (HTTP_MIME_MAP.find(suffix) != HTTP_MIME_MAP.end())
             {
                 //if find this MIME type file, return its MIME
-                //HTTP_Response_Map.push_back(std::move(std::make_pair(std::string("Content-Type"), HTTP_MIME_MAP[suffix])));
                 HTTP_Response_Map.insert(std::move(std::make_pair(std::string("Content-Type"), HTTP_MIME_MAP[suffix])));
             } else
             {
                 //else, handle it as plain text
-                //HTTP_Response_Map.push_back(std::move(
-                //      std::make_pair(std::string("Content-Type"), std::move(std::string("text/plain")))));
                 HTTP_Response_Map.insert(std::move(
                         std::make_pair(std::string("Content-Type"), std::move(std::string("text/plain")))));
                 suffix = "txt";
             }
-            //std::cout << "file path is: " << path << std::endl;
-            response = std::move(read_file(std::move(path)));
-            //HTTP_Response_Map.push_back(std::make_pair(std::move(std::string("Content-Length")),
-            //                                std::move(std::to_string(response.length()))));
+            //response = std::move(read_file(std::move(path)));
+
+            //mmap_start_addr = memory_mapping(path);
+
+            std::string response = std::move(read_file(std::move(path)));
+
+            //HTTP_Response_Map.insert(std::make_pair(std::move(std::string("Content-Length")),
+            //                                        std::move(std::to_string(file_info.st_size))));
+
             HTTP_Response_Map.insert(std::make_pair(std::move(std::string("Content-Length")),
                                                     std::move(std::to_string(response.length()))));
             std::string res_head =
                     request_line.at(2) + " " + std::to_string(status) + " " + HTTP_STATUS_CODE_MAP[status] + "\r\n";
             std::string field = std::move(map_to_string(HTTP_Response_Map));
-
-            //send http response head to client first,
-            //in case epoll will not send response immediately which would cause browser
-            //think website is unavailable.
-            //send_to_client(res_head);
-            //send_to_client(field);
-
-            str_reponse = std::move(res_head + field + response);
+            str_http_res_header = std::move(res_head) + std::move(field) + std::move(response);
             HTTP_Response_Map.clear();
             break;
         }
@@ -212,6 +152,23 @@ std::string HTTP_Handler::read_file(std::string &&filename)
         return "";
     } else
     {
+        if (HTTP_Request_Map.find("If-Modified-Since") != HTTP_Request_Map.end())
+        {
+            stat(filename.data(), &file_info);
+            struct tm mod_time;
+            if (strptime(HTTP_Request_Map["If-Modified-Since"].data(), "%a, %d %b %Y %H:%M:%S GMT", &mod_time) ==
+                (char *) nullptr)
+            {
+                return "";
+            }
+            time_t client_time = mktime(&mod_time);
+            double time_diff = difftime(file_info.st_mtime, client_time);
+            if (fabs(time_diff) < 1e-6)
+            {
+                status = 304;
+                return "";
+            }
+        }
         is.seekg(0, is.end);
         auto file_length = is.tellg();
         is.seekg(0, is.beg);
@@ -222,20 +179,26 @@ std::string HTTP_Handler::read_file(std::string &&filename)
         delete[] buffer;
         return image;
     }
-    /*std::ostringstream buf;
-    char ch;
+}
 
-    std::ifstream infile(filename);
-    if (!infile)
+char *HTTP_Handler::memory_mapping(std::string &filename)
+{
+    if (stat(filename.data(), &file_info) < 0)
     {
         status = 404;
-        return buf.str();
-    } else
+        return nullptr;
+    }
+    int srcfd = open(filename.data(), O_RDONLY, 0);
+    // can use sendfile
+    mmap_start_addr = static_cast<char *>(mmap(NULL, file_info.st_size, PROT_READ, MAP_PRIVATE, srcfd, 0));
+    close(srcfd);
+    if (mmap_start_addr == (void *) -1)
     {
-        while (buf && infile.get(ch)) buf.put(ch);
-        status = 200;
-        return buf.str();
-    }*/
+        status = 500;
+        mmap_start_addr = nullptr;
+    }
+    status = 200;
+    return mmap_start_addr;
 }
 
 int HTTP_Handler::send_to_client(std::string &message)
@@ -247,6 +210,34 @@ int HTTP_Handler::send_to_client(std::string &message)
     int ret = write(CLIENT_SOCK, buffer, body_length);
     delete[] buffer;
     return ret;
+}
+
+int HTTP_Handler::send_to_client(void *usrbuf, size_t n)
+{
+    size_t left = n;
+    ssize_t written;
+    char *bufp = (char *) usrbuf;
+    while (left > 0)
+    {
+        if ((written = write(CLIENT_SOCK, bufp, left)) <= 0)
+        {
+            if (errno == EINTR)  /* interrupted by sig handler return */
+                written = 0;    /* and call write() again */
+            else
+            {
+                return -1;       /* errorno set by write() */
+            }
+        }
+        left -= written;
+        bufp += written;
+    }
+    return n;
+}
+
+void HTTP_Handler::memory_unmapping()
+{
+    munmap(mmap_start_addr, file_info.st_size);
+    mmap_start_addr = nullptr;
 }
 
 /*
@@ -279,4 +270,26 @@ std::string HTTP_Handler::map_to_string(const HTTP_MAP &the_map)
         result += t.first + ": " + t.second + "\r\n";
     result += "\r\n";
     return result;
+}
+
+void HTTP_Handler::do_error()
+{
+    std::string res_head = "HTTP/1.1 " + std::to_string(status) + " " + HTTP_STATUS_CODE_MAP[status] + "\r\n";
+    std::string response = "<html><title>plusplusi error</title>\n<body bgcolor=\"\"ffffff\"\"><center><h1>" +
+                           std::to_string(status) + ": " + HTTP_STATUS_CODE_MAP[status] +
+                           "</h1>\n<hr><em>plusplusi web server</em></center>\n</body></html>";
+    HTTP_Response_Map.clear();
+    HTTP_Response_Map.insert(std::move(
+            std::make_pair(std::move(std::string("Server")), SERVER_INFO)));
+    HTTP_Response_Map.insert(std::move(
+            std::make_pair(std::string("Content-Type"), std::move(std::string("text/html")))));
+    HTTP_Response_Map.insert(std::move(
+            std::make_pair(std::string("Connection"), std::move(std::string("close")))));
+    HTTP_Response_Map.insert(std::move(
+            std::make_pair(std::string("Content-length"), std::move(std::to_string(response.length())))));
+
+    std::string temp = std::move(res_head) + std::move(map_to_string(HTTP_Response_Map)) + std::move(response);
+
+    send_to_client(temp);
+    HTTP_Response_Map.clear();
 }
