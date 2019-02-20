@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <vector>
 
-int main()
+int run_test()
 {
     int PORT = 1114;
     int WORKER = 4;
