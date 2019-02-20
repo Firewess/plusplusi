@@ -11,12 +11,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23cba3f0-f98d-4a57-9dcf-15e1377f8973" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/plusplusi.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/plusplusi.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="23cba3f0-f98d-4a57-9dcf-15e1377f8973" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,11 +41,7 @@
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="140">
-              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-            </state>
-          </provider>
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -116,6 +107,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -154,7 +146,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -233,6 +224,7 @@
       <workItem from="1550557480619" duration="24541000" />
       <workItem from="1550632059209" duration="2163000" />
       <workItem from="1550634615407" duration="7638000" />
+      <workItem from="1550678885268" duration="82000" />
     </task>
     <task id="LOCAL-00001" summary="定期存档，基于C++11的标准对代码进行了优化，如范围for循环，move语义等">
       <created>1549942370450</created>
@@ -297,11 +289,18 @@
       <option name="project" value="LOCAL" />
       <updated>1550666845090</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="change cmakelists.txt">
+      <created>1550678963174</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1550678963174</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="181596000" />
+    <option name="totallyTimeSpent" value="181678000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -316,7 +315,7 @@
     <frame x="0" y="28" width="1920" height="1018" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4976452" visible="true" weight="0.20096983" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4976452" visible="true" weight="0.20420259" />
       <window_info id="Structure" order="1" sideWeight="0.5023548" side_tool="true" weight="0.21228448" />
       <window_info id="Favorites" order="2" sideWeight="0.5005821" side_tool="true" weight="0.19098713" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -331,7 +330,7 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32941177" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50053877" side_tool="true" weight="0.3282353" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.35764706" />
-      <window_info anchor="bottom" id="CMake" order="12" weight="0.32941177" />
+      <window_info anchor="bottom" id="CMake" order="12" visible="true" weight="0.33058822" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -405,7 +404,8 @@
     <MESSAGE value="regular backup: finish handling epoll &amp; multi-process&#10;next: implement http/1.1 features like keep-alive .etc" />
     <MESSAGE value="almost done: Image transfer still has problems, timer &amp; 304 handling is done." />
     <MESSAGE value="The project is basically completed: fixed image transfer &amp; high CPU usage" />
-    <option name="LAST_COMMIT_MESSAGE" value="The project is basically completed: fixed image transfer &amp; high CPU usage" />
+    <MESSAGE value="change cmakelists.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="change cmakelists.txt" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -685,13 +685,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="18" lean-forward="true" selection-start-column="18" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/plusplusi.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="481">
@@ -796,12 +789,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        <state>
+          <caret column="18" lean-forward="true" selection-start-column="18" selection-end-column="18" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>
