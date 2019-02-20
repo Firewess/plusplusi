@@ -24,7 +24,6 @@
 #define QUEUE_MAX_COUNT 5
 #define BUFF_SIZE 1024
 #define WORKER_MAX 8
-#define TIME_OUT 2000
 #define SERVER_INFO "plusplusi/0.5 (Linux)\r\n"
 
 class HTTP_SERVER

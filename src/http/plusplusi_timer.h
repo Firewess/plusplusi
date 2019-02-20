@@ -25,7 +25,7 @@ public:
         ONCE, CIRCLE
     };
 
-    Timer(TimerManager &manager);
+    explicit Timer(TimerManager &manager);
     ~Timer();
     void start(TIMER_CALL_BACK_FUN fun, Epoll_Data_S* ptr, unsigned interval, TimerType timeType = ONCE);
     void stop();
@@ -50,7 +50,7 @@ private:
 
 struct HeapEntry
 {
-    unsigned long long time;
+    unsigned long long expire_time;
     Timer *timer;
 };
 

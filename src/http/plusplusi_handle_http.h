@@ -25,6 +25,8 @@
 #define TRACE 7
 #define PATCH 8
 
+#define TIME_OUT 500
+
 typedef std::map<std::string, std::string> HTTP_MAP;
 typedef std::map<int, std::string> HTTP_STATUS_CODE;
 typedef std::vector<std::pair<std::string, std::string>> HTTP_RESPONSE;

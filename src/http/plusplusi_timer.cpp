@@ -97,7 +97,7 @@ void TimerManager::del_timer(Timer *timer)
 void TimerManager::work_cycle()
 {
     unsigned long long now = get_curr_microsec();
-    while (!timer_min_heap.empty() && timer_min_heap[0].time <= now)
+    while (!timer_min_heap.empty() && timer_min_heap[0].expire_time <= now)
     {
         Timer *timer = timer_min_heap[0].timer;
         del_timer(timer);
@@ -123,8 +123,8 @@ unsigned long long TimerManager::get_curr_microsec()
     ret = ret * 1000 + timebuffer.millitm;
     return ret;
 #else
-    timeval tv;
-    ::gettimeofday(&tv, 0);
+    timeval tv{};
+    ::gettimeofday(&tv, nullptr);
     unsigned long long ret = tv.tv_sec;
     return ret * 1000 + tv.tv_usec / 1000;
 #endif

@@ -103,7 +103,15 @@ void HTTP_Handler::operator()(const std::string &str)
                         std::make_pair(std::string("Content-Type"), std::move(std::string("text/plain")))));
                 suffix = "txt";
             }
-            //response = std::move(read_file(std::move(path)));
+
+            if (HTTP_Request_Map.find("Connection") != HTTP_Request_Map.end() &&
+                HTTP_Request_Map["Connection"] == "keep-alive")
+            {
+                HTTP_Response_Map.insert(std::move(
+                        std::make_pair(std::string("Connection"), std::move(std::string("keep-alive")))));
+                HTTP_Response_Map.insert(std::move(
+                        std::make_pair(std::string("Keep-Alive"), std::move(std::to_string(TIME_OUT)))));
+            }
 
             //mmap_start_addr = memory_mapping(path);
 
@@ -117,7 +125,12 @@ void HTTP_Handler::operator()(const std::string &str)
             std::string res_head =
                     request_line.at(2) + " " + std::to_string(status) + " " + HTTP_STATUS_CODE_MAP[status] + "\r\n";
             std::string field = std::move(map_to_string(HTTP_Response_Map));
+            if(HTTP_MIME_MAP[suffix].find("image") == -1)
+            {
+                field += "\r\n";
+            }
             str_http_res_header = std::move(res_head) + std::move(field) + std::move(response);
+            //str_http_res_header = std::move(res_head) + std::move(field);
             HTTP_Response_Map.clear();
             break;
         }
@@ -155,7 +168,7 @@ std::string HTTP_Handler::read_file(std::string &&filename)
         if (HTTP_Request_Map.find("If-Modified-Since") != HTTP_Request_Map.end())
         {
             stat(filename.data(), &file_info);
-            struct tm mod_time;
+            struct tm mod_time{};
             if (strptime(HTTP_Request_Map["If-Modified-Since"].data(), "%a, %d %b %Y %H:%M:%S GMT", &mod_time) ==
                 (char *) nullptr)
             {
@@ -163,7 +176,7 @@ std::string HTTP_Handler::read_file(std::string &&filename)
             }
             time_t client_time = mktime(&mod_time);
             double time_diff = difftime(file_info.st_mtime, client_time);
-            if (fabs(time_diff) < 1e-6)
+            if (time_diff < 0 || fabs(time_diff) < 1e-6)
             {
                 status = 304;
                 return "";
@@ -188,9 +201,26 @@ char *HTTP_Handler::memory_mapping(std::string &filename)
         status = 404;
         return nullptr;
     }
+    if (HTTP_Request_Map.find("If-Modified-Since") != HTTP_Request_Map.end())
+    {
+        stat(filename.data(), &file_info);
+        struct tm mod_time{};
+        if (strptime(HTTP_Request_Map["If-Modified-Since"].data(), "%a, %d %b %Y %H:%M:%S GMT", &mod_time) ==
+            (char *) nullptr)
+        {
+            return nullptr;
+        }
+        time_t client_time = mktime(&mod_time);
+        double time_diff = difftime(file_info.st_mtime, client_time);
+        if (time_diff < 0 || fabs(time_diff) < 1e-6)
+        {
+            status = 304;
+            return nullptr;
+        }
+    }
     int srcfd = open(filename.data(), O_RDONLY, 0);
     // can use sendfile
-    mmap_start_addr = static_cast<char *>(mmap(NULL, file_info.st_size, PROT_READ, MAP_PRIVATE, srcfd, 0));
+    mmap_start_addr = static_cast<char *>(mmap(nullptr, file_info.st_size, PROT_READ, MAP_PRIVATE, srcfd, 0));
     close(srcfd);
     if (mmap_start_addr == (void *) -1)
     {
@@ -268,7 +298,6 @@ std::string HTTP_Handler::map_to_string(const HTTP_MAP &the_map)
     std::string result;
     for (const auto &t: the_map)
         result += t.first + ": " + t.second + "\r\n";
-    result += "\r\n";
     return result;
 }
 
@@ -287,6 +316,7 @@ void HTTP_Handler::do_error()
             std::make_pair(std::string("Connection"), std::move(std::string("close")))));
     HTTP_Response_Map.insert(std::move(
             std::make_pair(std::string("Content-length"), std::move(std::to_string(response.length())))));
+
 
     std::string temp = std::move(res_head) + std::move(map_to_string(HTTP_Response_Map)) + std::move(response);
 

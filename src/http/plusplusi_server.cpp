@@ -134,23 +134,21 @@ int HTTP_SERVER::proc_receive(struct epoll_event *ready_event)
             len = (int) recv(event_fd, buff, sizeof(buff), 0);
             if (len <= 0)
             {
-                if (errno == EINTR || errno == EAGAIN)
+                /*if (errno == EINTR || errno == EAGAIN)
                 {
                     continue;
-                }
+                }*/
                 close_fd(data);
             } else if (len > 0)
             {
                 //handle http request message
                 (*http_handler)(buff);
-
                 if (http_handler->HTTP_Request_Map.find("Connection") != http_handler->HTTP_Request_Map.end() &&
                     http_handler->HTTP_Request_Map["Connection"] == "keep-alive" && data->timer == nullptr)
                 {
-                    Timer* timer = new Timer(timer_manager);
+                    Timer *timer = new Timer(timer_manager);
                     timer->start(&HTTP_SERVER::close_fd, data, TIME_OUT);
                 }
-
                 ready_event->events = EPOLLOUT | EPOLLET;
                 ready_event->data.ptr = data;
                 mod_event_epoll(epoll_fd, event_fd, ready_event);
@@ -162,22 +160,21 @@ int HTTP_SERVER::proc_receive(struct epoll_event *ready_event)
         if (!http_handler->str_http_res_header.empty())
         {
             //printf("%d 's %d receive EPOLLOUT & data is ready\r\n", getpid(), event_fd);
-            if(http_handler->status < 400)
+            if (http_handler->status < 400)
             {
                 http_handler->send_to_client(http_handler->str_http_res_header);
+
+                /*if (http_handler->mmap_start_addr != nullptr)
+                {
+                    http_handler->send_to_client(http_handler->mmap_start_addr, http_handler->file_info.st_size);
+                    http_handler->memory_unmapping();
+                }*/
                 http_handler->str_http_res_header.clear();
             } else
             {
                 http_handler->str_http_res_header.clear();
                 http_handler->do_error();
             }
-
-            /*if(http_handler->mmap_start_addr != nullptr)
-            {
-                http_handler->send_to_client(http_handler->mmap_start_addr, http_handler->file_info.st_size);
-            }
-            http_handler->memory_unmapping();*/
-
             if (http_handler->HTTP_Request_Map.find("Connection") == http_handler->HTTP_Request_Map.end() ||
                 http_handler->HTTP_Request_Map["Connection"] != "keep-alive")
             {
@@ -230,7 +227,7 @@ void HTTP_SERVER::proc_epoll(int epoll_fd, int timeout)
 
 void HTTP_SERVER::close_fd(Epoll_Data_S *ptr)
 {
-    if(ptr->timer != nullptr)
+    if (ptr->timer != nullptr)
     {
         ptr->timer->stop();
         delete ptr->timer;

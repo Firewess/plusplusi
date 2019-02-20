@@ -11,21 +11,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23cba3f0-f98d-4a57-9dcf-15e1377f8973" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/http/plusplusi_timer.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/http/plusplusi_timer.h" afterDir="false" />
+    <list default="true" id="23cba3f0-f98d-4a57-9dcf-15e1377f8973" name="Default Changelist" comment="The project is basically completed: fixed image transfer &amp; high CPU usage">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/plusplusi_config.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/plusplusi_config.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/http/plusplusi_accept_mutex.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_accept_mutex.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/http/plusplusi_epoll.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_epoll.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/http/plusplusi_handle_http.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_handle_http.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/http/plusplusi_handle_http.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_handle_http.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/http/plusplusi_server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_server.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/http/plusplusi_server.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_server.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/plusplusi_test.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test1.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test/test1.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/http/plusplusi_timer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_timer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/http/plusplusi_timer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/http/plusplusi_timer.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -57,8 +50,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/http/plusplusi_server.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-559">
-              <caret line="184" column="13" selection-start-line="184" selection-start-column="13" selection-end-line="184" selection-end-column="13" />
+            <state relative-caret-position="320">
+              <caret line="16" column="40" lean-forward="true" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
               <folding>
                 <element signature="e#71#100#0" expanded="true" />
               </folding>
@@ -67,24 +60,36 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/http/plusplusi_handle_http.h">
+        <entry file="file://$PROJECT_DIR$/src/http/plusplusi_handle_http.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="321">
-              <caret line="58" column="8" lean-forward="true" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
+            <state relative-caret-position="183">
+              <caret line="206" column="27" selection-start-line="206" selection-start-column="27" selection-end-line="206" selection-end-column="27" />
               <folding>
-                <element signature="e#210#227#0" expanded="true" />
+                <element signature="e#71#94#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/http/plusplusi_timer.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="194">
+              <caret line="27" column="13" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+              <folding>
+                <element signature="e#303#323#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/http/plusplusi_handle_http.cpp">
+        <entry file="file://$PROJECT_DIR$/src/http/plusplusi_timer.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="481">
-              <caret line="280" column="30" lean-forward="true" selection-start-line="280" selection-start-column="30" selection-end-line="280" selection-end-column="30" />
+            <state relative-caret-position="1591">
+              <caret line="128" column="42" lean-forward="true" selection-start-line="128" selection-start-column="42" selection-end-line="128" selection-end-column="42" />
               <folding>
-                <element signature="e#71#94#0" expanded="true" />
+                <element signature="e#130#153#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -118,7 +123,6 @@
       <list>
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/core/plusplusi_config.cpp" />
-        <option value="$PROJECT_DIR$/src/core/plusplusi_config.h" />
         <option value="$PROJECT_DIR$/html/index.html" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_parsehttp.h" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_function_objects.h" />
@@ -131,13 +135,14 @@
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/test/test1.cpp" />
         <option value="$PROJECT_DIR$/test/test.cpp" />
-        <option value="$PROJECT_DIR$/src/http/plusplusi_timer.h" />
-        <option value="$PROJECT_DIR$/src/http/plusplusi_timer.cpp" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_epoll.h" />
+        <option value="$PROJECT_DIR$/src/core/plusplusi_config.h" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_server.h" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_handle_http.h" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_server.cpp" />
         <option value="$PROJECT_DIR$/src/http/plusplusi_handle_http.cpp" />
+        <option value="$PROJECT_DIR$/src/http/plusplusi_timer.h" />
+        <option value="$PROJECT_DIR$/src/http/plusplusi_timer.cpp" />
       </list>
     </option>
   </component>
@@ -272,7 +277,9 @@
       <workItem from="1550503670535" duration="996000" />
       <workItem from="1550546314985" duration="2274000" />
       <workItem from="1550557379353" duration="80000" />
-      <workItem from="1550557480619" duration="23913000" />
+      <workItem from="1550557480619" duration="24541000" />
+      <workItem from="1550632059209" duration="2163000" />
+      <workItem from="1550634615407" duration="4314000" />
     </task>
     <task id="LOCAL-00001" summary="定期存档，基于C++11的标准对代码进行了优化，如范围for循环，move语义等">
       <created>1549942370450</created>
@@ -323,11 +330,18 @@
       <option name="project" value="LOCAL" />
       <updated>1550394704317</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="almost done: Image transfer still has problems, timer &amp; 304 handling is done.">
+      <created>1550591866430</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1550591866431</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="171167000" />
+    <option name="totallyTimeSpent" value="178272000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -340,19 +354,20 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="28" width="1920" height="1018" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4976452" visible="true" weight="0.2413793" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4976452" visible="true" weight="0.20096983" />
       <window_info id="Structure" order="1" sideWeight="0.5023548" side_tool="true" weight="0.21228448" />
       <window_info id="Favorites" order="2" sideWeight="0.5005821" side_tool="true" weight="0.19098713" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32941177" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3670588" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.46941176" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4435294" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32941177" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Messages" order="8" sideWeight="0.4994612" weight="0.27058825" />
+      <window_info active="true" anchor="bottom" id="Messages" order="8" sideWeight="0.4994612" visible="true" weight="0.27058825" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32941177" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50053877" side_tool="true" weight="0.3282353" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.35764706" />
@@ -428,7 +443,9 @@
     <MESSAGE value="regular backup: finish processing the basic GET method and start to write epoll" />
     <MESSAGE value="regular backup: finish basic multi-process &amp; epoll code" />
     <MESSAGE value="regular backup: finish handling epoll &amp; multi-process&#10;next: implement http/1.1 features like keep-alive .etc" />
-    <option name="LAST_COMMIT_MESSAGE" value="regular backup: finish handling epoll &amp; multi-process&#10;next: implement http/1.1 features like keep-alive .etc" />
+    <MESSAGE value="almost done: Image transfer still has problems, timer &amp; 304 handling is done." />
+    <MESSAGE value="The project is basically completed: fixed image transfer &amp; high CPU usage" />
+    <option name="LAST_COMMIT_MESSAGE" value="The project is basically completed: fixed image transfer &amp; high CPU usage" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -596,16 +613,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/plusplusi_config.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3580">
-          <caret line="184" column="10" selection-start-line="184" selection-start-column="10" selection-end-line="184" selection-end-column="10" />
-          <folding>
-            <element signature="e#4578#4587#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/core/plusplusi_config.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1320">
@@ -745,16 +752,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/http/plusplusi_timer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-60">
-          <caret line="30" column="16" selection-start-line="30" selection-start-column="16" selection-end-line="30" selection-end-column="16" />
-          <folding>
-            <element signature="e#303#323#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/http/plusplusi_epoll.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="501">
@@ -765,33 +762,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/http/plusplusi_timer.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1011">
-          <caret line="103" column="29" lean-forward="true" selection-start-line="103" selection-start-column="29" selection-end-line="103" selection-end-column="29" />
-          <folding>
-            <element signature="e#130#153#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/http/plusplusi_server.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="37" column="23" lean-forward="true" selection-start-line="37" selection-start-column="23" selection-end-line="37" selection-end-column="23" />
-          <folding>
-            <element signature="e#110#127#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/include/time.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="215" column="7" lean-forward="true" selection-start-line="215" selection-start-column="7" selection-end-line="215" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/bits/stat.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="271">
@@ -799,10 +769,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/include/time.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3880">
+          <caret line="194" column="14" selection-start-line="194" selection-start-column="14" selection-end-line="194" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/core/plusplusi_config.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="265">
+          <caret line="184" column="10" selection-start-line="184" selection-start-column="10" selection-end-line="184" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/http/plusplusi_server.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="25" column="20" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
+          <folding>
+            <element signature="e#110#127#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/http/plusplusi_handle_http.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="58" column="8" lean-forward="true" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
+        <state relative-caret-position="17">
+          <caret line="35" column="16" lean-forward="true" selection-start-line="35" selection-start-column="16" selection-end-line="35" selection-end-column="16" />
           <folding>
             <element signature="e#210#227#0" expanded="true" />
           </folding>
@@ -811,8 +805,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/http/plusplusi_server.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-559">
-          <caret line="184" column="13" selection-start-line="184" selection-start-column="13" selection-end-line="184" selection-end-column="13" />
+        <state relative-caret-position="320">
+          <caret line="16" column="40" lean-forward="true" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
           <folding>
             <element signature="e#71#100#0" expanded="true" />
           </folding>
@@ -821,10 +815,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/http/plusplusi_handle_http.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="481">
-          <caret line="280" column="30" lean-forward="true" selection-start-line="280" selection-start-column="30" selection-end-line="280" selection-end-column="30" />
+        <state relative-caret-position="183">
+          <caret line="206" column="27" selection-start-line="206" selection-start-column="27" selection-end-line="206" selection-end-column="27" />
           <folding>
             <element signature="e#71#94#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/http/plusplusi_timer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="27" column="13" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+          <folding>
+            <element signature="e#303#323#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/http/plusplusi_timer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1591">
+          <caret line="128" column="42" lean-forward="true" selection-start-line="128" selection-start-column="42" selection-end-line="128" selection-end-column="42" />
+          <folding>
+            <element signature="e#130#153#0" expanded="true" />
           </folding>
         </state>
       </provider>
