@@ -58,7 +58,7 @@ void HTTP_SERVER::init_server()
         printf("listen socket error: %s(errno: %d)\n", strerror(errno), errno);
         return;
     }
-    std::cout << "server is running on " << PORT << std::endl;
+    std::cout << "plusplusi web server is running on " << PORT << std::endl;
 }
 
 int HTTP_SERVER::create_workers(unsigned int worker_num)
