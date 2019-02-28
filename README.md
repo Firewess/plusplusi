@@ -77,7 +77,7 @@ cmake .. && make
 
 ## 更多细节
 
-[https://plusplusi.cn/Web服务-plusplusi总结](https://plusplusi.cn/Web服务器-plusplusi总结)
+[https://plusplusi.cn/Web服务器-plusplusi总结](https://plusplusi.cn/Web服务器-plusplusi总结)
 
 
 
